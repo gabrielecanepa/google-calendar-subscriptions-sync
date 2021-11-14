@@ -7,7 +7,7 @@ export const insert = async (entries: UserSubscription[]): Promise<void> => {
     for (const [i, subscription] of subscriptions.entries()) {
       info(`Inserting ${subscription.summary || subscription.id || `subscription ${i}`}...`)
       await client.subscriptions.insert({ requestBody: subscription })
-      info('Subscription inserted ✅')
+      info('Subscription inserted.')
     }
   })
 }

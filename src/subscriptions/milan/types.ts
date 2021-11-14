@@ -1,11 +1,4 @@
-export enum FootballCompetition {
-  CL = 'UEFA Champions League',
-  EL = 'UEFA Europa League',
-  COP = 'Coppa Italia',
-  SA = 'Serie A',
-}
-
-export interface ForzaFootballMatch {
+export interface Match {
   id: number
   kickoff_at: string
   home_team: {
@@ -31,6 +24,10 @@ export interface ForzaFootballMatch {
   tournament: {
     name: string
   }
+  match_time: {
+    length: number
+  }
+  status: 'before' | 'live' | 'after'
   stages?: Array<any>
   series?: string
   round?: number

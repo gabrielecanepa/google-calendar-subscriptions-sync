@@ -1,46 +1,38 @@
-import { calendar_v3, fetchCalendarEvents } from 'google-calendar-subscriptions'
-import {
-  COMPETITION_REGEX,
-  FF_MATCH_BASE_URL,
-  FF_TEAM_URL,
-  PREFIX_REGEX,
-  SKY_TEAM_URL,
-  STADIUM_REGEX,
-  TIMEZONE,
-} from './data'
-import { FootballCompetition, ForzaFootballMatch } from './types'
-import { fetchMsgPack, isSameDate, toEventId } from '@/utils'
+import { calendar_v3 } from 'google-calendar-subscriptions'
+import { MATCH_BASE_URL, TEAM_URL, TIMEZONE } from './data'
+import { Match } from './types'
+import { fetchMsgPack } from '@/utils'
 
-export default (async events => {
-  const ffMatches = (await fetchMsgPack(FF_TEAM_URL)).matches as ForzaFootballMatch[]
-  const skyEvents = await fetchCalendarEvents(SKY_TEAM_URL)
+export default (async () => {
+  const matches = (await fetchMsgPack(TEAM_URL)).matches as Match[]
 
-  return events.map(event => {
-    const [competitionMatch, competitionCode] = event.summary.match(COMPETITION_REGEX) || ['', '']
-    const competition = competitionCode
-      ? FootballCompetition[competitionCode as keyof typeof FootballCompetition]
-      : 'Serie A'
+  return matches.map(match => {
+    const event: calendar_v3.Schema$Event = {}
 
-    const summary = event.summary.replace(competitionMatch, '').replace(PREFIX_REGEX, '').replace(/\s\s/g, ' ').trim()
+    const {
+      id: matchId,
+      home_team: { name: homeTeam },
+      away_team: { name: awayTeam },
+      kickoff_at,
+      tournament: { name: competition },
+      score,
+      status,
+      match_time: { length },
+    } = match
 
-    const start: calendar_v3.Schema$EventDateTime = { ...event.start, timeZone: TIMEZONE }
-    const startDate = start.dateTime || start.date
-    if (!startDate) return event
+    const startDatetime = new Date(kickoff_at).toISOString()
+    const endDatetime = new Date(new Date(startDatetime).getTime() + (length + 15) * 60_000).toISOString()
 
-    const id = toEventId(event)
+    event.id = matchId.toString()
+    event.summary = `${homeTeam} - ${awayTeam}`
+    event.description = `${competition}\n\n${MATCH_BASE_URL}/${match.id}`
+    event.start = { dateTime: startDatetime, timeZone: TIMEZONE }
+    event.end = { dateTime: endDatetime, timeZone: TIMEZONE }
 
-    // Add Forza Football match URL to description.
-    const match = ffMatches.find(({ kickoff_at }) => isSameDate(kickoff_at, startDate))
-    const description = match ? `${competition}\n\n${FF_MATCH_BASE_URL}/${match.id}` : competition
-
-    // Add location from Sky.
-    const skyEvent = skyEvents.find(({ start }) => isSameDate(start.dateTime || start.date, startDate))
-    if (skyEvent?.location) {
-      const { location } = skyEvent
-      event.location = location
-      if (!STADIUM_REGEX.test(location) && !location.includes(', ')) event.location += ' Stadium'
+    if (status !== 'before' && score.current) {
+      event.summary += ` (${score.current.join('-')})`
     }
 
-    return { ...event, id, summary, description, start }
+    return event
   })
 }) as calendar_v3.Schema$Subscription['fn']

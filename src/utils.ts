@@ -87,8 +87,14 @@ export const toEventId = ({ summary, start }: calendar_v3.Schema$Event): string 
 /**
  * Returns true if the two dates are the same.
  */
-export const isSameDate = (date1: string, date2: string): boolean =>
-  new Date(date1).getTime() === new Date(date2).getTime()
+export const isSameDate = (
+  calendarDate1: calendar_v3.Schema$EventDateTime,
+  calendarDate2: calendar_v3.Schema$EventDateTime
+): boolean => {
+  const date1 = new Date(calendarDate1.dateTime || calendarDate1.date)
+  const date2 = new Date(calendarDate2.dateTime || calendarDate2.date)
+  return date1.toISOString().split('T')[0] === date2.toISOString().split('T')[0]
+}
 
 /**
  * Pads the specified number with leading zeros and returns it as a string.

@@ -10,6 +10,6 @@ export const sync = async (entries: UserSubscription[]): Promise<void> =>
 
     await client.subscriptions.sync({ requestBody: subscriptions })
 
-    info(`${pluralize('Subscription', subscriptions.length)} synced`)
+    info(`${pluralize('Subscription', subscriptions.length)} synced.`)
     if (entries.length > 1 && entries[entries.length - 1]) info('')
   })

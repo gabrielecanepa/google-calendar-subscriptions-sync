@@ -26,7 +26,7 @@ export const clear = async (entries: UserSubscription[]): Promise<void> => {
         await client.events.delete({ calendarId, eventId: item.id })
       }
 
-      info('Calendar cleared ✅')
+      info('Calendar cleared.')
     }
   })
 }
