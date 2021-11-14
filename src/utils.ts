@@ -1,4 +1,5 @@
 import { decodeAsync } from '@msgpack/msgpack'
+import { calendar_v3 } from 'google-calendar-subscriptions'
 
 /**
  * Converts a string to an environment variable name format.
@@ -21,20 +22,33 @@ export const getEnv = (key: string, strict = false): string => {
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true'
 
 /**
+ * Logs a info message to the console.
+ */
+export const info = (message: string): void => console.info(message)
+/**
  * Logs a notice message to the console.
  */
 export const notice = (message: string): void =>
-  isGithubActions ? console.info(`::notice::${message}`) : console.info(message)
+  isGithubActions ? info(`::notice::${message}`) : info(`Notice: ${message}`)
 /**
  * Logs a warning message to the console.
  */
 export const warning = (message: string): void =>
-  isGithubActions ? console.info(`::warning::${message}`) : console.warn(message)
+  isGithubActions ? info(`::warning::${message}`) : console.warn(`Warning: ${message}`)
 /**
  * Logs an error message to the console.
  */
 export const error = (message: string): void =>
-  isGithubActions ? console.info(`::error::${message}`) : console.error(message)
+  isGithubActions ? info(`::error::${message}`) : console.error(`Error: ${message}`)
+
+/**
+ * Exits the process with an error message.
+ * The process will exit with code 1 if not specified.
+ */
+export const exit = (message: string, code: number = 1): void => {
+  error(`${message}\n`)
+  process.exit(code)
+}
 
 /**
  * Fetches and decodes a MessagePack from a URL.
@@ -60,6 +74,15 @@ export const toBase32Hex = (string: string): string =>
     .match(/([a-v]|[0-9])/gi)
     ?.join('')
     .toLowerCase() || ''
+
+/**
+ * Converts a Google Calendar event to an event ID.
+ * The event ID is a base32hex representation of the event summary and start date.
+ */
+export const toEventId = ({ summary, start }: calendar_v3.Schema$Event): string => {
+  const date = new Date(start.dateTime || start.date).toISOString().split('T')[0]
+  return toBase32Hex(`${summary}${date}`)
+}
 
 /**
  * Returns true if the two dates are the same.

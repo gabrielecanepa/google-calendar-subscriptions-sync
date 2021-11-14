@@ -18,11 +18,11 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "action": "ts-node src/index.ts",
+    "action": "ts-node src/index.ts action",
+    "script": "ts-node src/index.ts script",
     "sync": "pnpm action sync",
     "clear": "pnpm action clear",
     "insert": "pnpm action insert",
-    "script": "ts-node src/script.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "pnpm lint --fix",
     "ci": "pnpm lint"

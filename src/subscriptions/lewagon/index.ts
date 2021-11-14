@@ -1,10 +1,13 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
 import { ROLE_REGEX, addresses, modules } from './data'
-import { addLeadingZeros, titleizeList } from '@/utils'
+import { addLeadingZeros, titleizeList, toEventId } from '@/utils'
 
 export default events =>
   events.map(event => {
     const { description, htmlLink, location, summary } = event
+
+    event.id = toEventId(event)
+    event.summary = `Le Wagon ${summary}`
 
     if (location) {
       event.location = location ? addresses[location.toLowerCase()] || location : null

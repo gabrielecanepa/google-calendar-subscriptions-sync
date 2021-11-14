@@ -9,7 +9,7 @@ import {
   TIMEZONE,
 } from './data'
 import { FootballCompetition, ForzaFootballMatch } from './types'
-import { fetchMsgPack, isSameDate, toBase32Hex } from '@/utils'
+import { fetchMsgPack, isSameDate, toEventId } from '@/utils'
 
 export default (async events => {
   const ffMatches = (await fetchMsgPack(FF_TEAM_URL)).matches as ForzaFootballMatch[]
@@ -26,7 +26,8 @@ export default (async events => {
     const start: calendar_v3.Schema$EventDateTime = { ...event.start, timeZone: TIMEZONE }
     const startDate = start.dateTime || start.date
     if (!startDate) return event
-    const id = toBase32Hex(startDate.split('T')[0])
+
+    const id = toEventId(event)
 
     // Add Forza Football match URL to description.
     const match = ffMatches.find(({ kickoff_at }) => isSameDate(kickoff_at, startDate))

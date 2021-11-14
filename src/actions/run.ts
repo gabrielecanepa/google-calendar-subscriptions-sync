@@ -1,6 +1,6 @@
 import { auth, calendar, calendar_v3 } from 'google-calendar-subscriptions'
 import { UserSubscription } from '@/types'
-import { notice } from '@/utils'
+import { info } from '@/utils'
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar']
 
@@ -23,7 +23,7 @@ export const run = async (entries: UserSubscription[], fn: SubscriptionCallback)
   }, [])
 
   for (const user of users) {
-    notice(`Running on ${user.credentials.client_email}...`)
+    info(`Running on ${user.credentials.client_email}...`)
 
     const subscriptions: calendar_v3.Schema$Subscription[] = await Promise.all(
       user.subscriptions.map(async subscription => {

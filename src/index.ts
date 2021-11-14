@@ -4,15 +4,17 @@ import { basename, extname, resolve } from 'path'
 
 import actions from '@/actions'
 import { UserSubscription } from '@/types'
-import { getEnv, toEnv } from '@/utils'
+import { exit, getEnv, toEnv } from '@/utils'
 
 const SUBSCRIPTIONS = getEnv('SUBSCRIPTIONS')
 
-const [cmd, ...args] = process.argv.slice(2)
-if (!cmd) throw Error('No command provided.')
+enum Cmd {
+  Action = 'action',
+  Script = 'script',
+}
 
-const action = actions[cmd]
-if (!action) throw Error(`Action ${cmd} not found.`)
+const [cmd, arg, ...opts] = process.argv.slice(2)
+if (!cmd) exit('no command provided')
 
 const exec = async () => {
   const subscriptions: UserSubscription[] = await Promise.all(
@@ -26,19 +28,42 @@ const exec = async () => {
       const client_email = getEnv(`${USER}_CLIENT_EMAIL`, true)
       const private_key = getEnv(`${USER}_PRIVATE_KEY`, true)
 
-      const { default: fn } = await import(`./subscriptions/${name}`)
+      const { default: fn } = await import(`@/subscriptions/${name}`)
 
       return { id: name, url, calendarId, fn, credentials: { client_email, private_key } }
     })
   )
 
-  const entries = subscriptions.filter(({ id }) => {
-    if (args.length) return args.includes(id)
-    if (SUBSCRIPTIONS) return SUBSCRIPTIONS.split(',').includes(id)
-    return true
-  })
+  switch (cmd) {
+    case Cmd.Action:
+      if (!arg) exit('no action provided')
 
-  action(entries)
+      const action = actions[arg]
+      if (!action) throw Error(`action ${arg} not found`)
+
+      const entries = subscriptions.filter(({ id }) => {
+        if (opts.length) return opts.includes(id)
+        if (SUBSCRIPTIONS) return SUBSCRIPTIONS.split(',').includes(id)
+        return true
+      })
+
+      action(entries)
+      break
+
+    case Cmd.Script:
+      if (!arg) exit('no script provided.')
+
+      try {
+        await import(`@/scripts/${arg}`)
+        break
+      } catch (e) {
+        if (e.code === 'MODULE_NOT_FOUND') exit(`script ${arg}.ts not found`)
+        throw e
+      }
+
+    default:
+      exit(`command ${cmd} not found.`)
+  }
 }
 
 exec()

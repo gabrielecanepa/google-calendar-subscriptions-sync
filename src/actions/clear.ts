@@ -1,6 +1,6 @@
 import { run } from './run'
 import { UserSubscription } from '@/types'
-import { error, notice } from '@/utils'
+import { info, notice, warning } from '@/utils'
 
 const MAX_CALENDAR_EVENTS = 2_500
 
@@ -9,7 +9,7 @@ export const clear = async (entries: UserSubscription[]): Promise<void> => {
     for (const [i, subscription] of subscriptions.entries()) {
       const { calendarId, id, summary } = subscription
 
-      notice(`Clearing ${summary || id || `subscription ${i + 1}`}...`)
+      info(`Clearing ${summary || id || `subscription ${i + 1}`}...`)
 
       const { items = [] } = (await client.events.list({ calendarId, maxResults: MAX_CALENDAR_EVENTS })).data
 
@@ -20,13 +20,13 @@ export const clear = async (entries: UserSubscription[]): Promise<void> => {
 
       for (const item of items) {
         if (!item.id) {
-          error(`Event ${item.summary} has no id. Skipping...`)
+          warning(`event ${item.summary} has no id. Skipping...`)
           continue
         }
         await client.events.delete({ calendarId, eventId: item.id })
       }
 
-      notice('Calendar cleared ✅')
+      info('Calendar cleared ✅')
     }
   })
 }

@@ -1,9 +1,9 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
-import { titleizeList, toBase32Hex } from '@/utils'
+import { titleizeList, toEventId } from '@/utils'
 
 export default events =>
   events.reduce((acc, e) => {
-    const id = toBase32Hex(e.summary + (e.start.dateTime?.split('T')[0] || e.start.date).slice(0, 4))
+    const id = toEventId(e)
 
     if (e.location && e.location !== 'Italy') {
       if (!e.location.includes('Genoa')) return acc
