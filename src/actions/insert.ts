@@ -1,12 +1,13 @@
-import { info } from 'console'
 import { run } from './run'
+import { UserSubscription } from '@/types'
+import { notice } from '@/utils'
 
-export const insert = async (subscriptionIds: string[]): Promise<void> => {
-  run(subscriptionIds, async (client, subscriptions) => {
-    for (const subscription of subscriptions) {
-      info(`Inserting ${subscription.summary || subscription.id || 'subscription'}...`)
+export const insert = async (entries: UserSubscription[]): Promise<void> => {
+  run(entries, async (client, subscriptions) => {
+    for (const [i, subscription] of subscriptions.entries()) {
+      notice(`Inserting ${subscription.summary || subscription.id || `subscription ${i}`}...`)
       await client.subscriptions.insert({ requestBody: subscription })
-      info('Subscription inserted ✅')
+      notice('Subscription inserted ✅')
     }
   })
 }

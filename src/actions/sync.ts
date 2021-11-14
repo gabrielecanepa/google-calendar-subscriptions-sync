@@ -1,11 +1,15 @@
-import { info } from 'console'
 import pluralize from 'pluralize'
 import { run } from './run'
-import { titleizeList } from '../utils'
+import { notice, titleizeList } from '@/utils'
+import { UserSubscription } from '@/types'
 
-export const sync = async (subscriptionIds: string[]): Promise<void> =>
-  run(subscriptionIds, async (client, subscriptions) => {
-    info(`Syncing ${titleizeList(subscriptions.map(({ id, summary }) => summary || id))}`)
+export const sync = async (entries: UserSubscription[]): Promise<void> =>
+  run(entries, async (client, subscriptions) => {
+    const names = subscriptions.map(({ id, summary }, i) => summary || id || `subscription ${i}`)
+    notice(`Syncing ${titleizeList(names)}...`)
+
     await client.subscriptions.sync({ requestBody: subscriptions })
-    info(`${pluralize('Subscription', subscriptions.length)} synced`)
+
+    notice(`${pluralize('Subscription', subscriptions.length)} synced`)
+    if (entries.length > 1 && entries[entries.length - 1]) notice('')
   })

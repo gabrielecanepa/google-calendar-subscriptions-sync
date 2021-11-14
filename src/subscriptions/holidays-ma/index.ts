@@ -1,11 +1,15 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
-import { parseEvents } from './utils'
+import { toBase32Hex } from '@/utils'
 
-export default {
-  summary: 'Holidays in Morocco',
-  id: 'holidays-ma',
-  email: process.env.GMAIL_CLIENT_EMAIL,
-  calendarId: process.env.HOLIDAYS_MA_CALENDAR_ID,
-  url: process.env.HOLIDAYS_MA_SUBSCRIPTION_URL,
-  fn: parseEvents,
-} as calendar_v3.Schema$Subscription
+export default events =>
+  events.reduce((acc, e) => {
+    const id = toBase32Hex(e.summary + (e.start.dateTime?.split('T')[0] || e.start.date).slice(0, 4))
+
+    const summary = `${e.summary} 🇲🇦`
+
+    let description = e.description.split('\n')[0].trim()
+    description = description.endsWith('.') ? description : `${description}.`
+    if (e.htmlLink) description += `\n\n${e.htmlLink.replace('www.', '')}`
+
+    return [...acc, { ...e, id, summary, description }]
+  }, []) as calendar_v3.Schema$Subscription['fn']

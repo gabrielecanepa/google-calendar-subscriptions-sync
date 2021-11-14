@@ -1,41 +1,45 @@
-import { info } from 'console'
 import { auth, calendar, calendar_v3 } from 'google-calendar-subscriptions'
-import subscriptionsList from '../subscriptions'
+import { UserSubscription } from '@/types'
+import { notice } from '@/utils'
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-type RunCallback = (client: calendar_v3.Calendar, subscription: calendar_v3.Schema$Subscription[]) => Promise<void>
+type SubscriptionCallback = (
+  client: calendar_v3.Calendar,
+  subscriptionIds: calendar_v3.Schema$Subscription[]
+) => Promise<void>
 
-export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<void> => {
-  const emailSubscriptions = subscriptionIds.reduce((acc, id) => {
-    const { email } = subscriptionsList.find(s => s.id === id) || {}
-    if (!email) throw Error(`Invalid subscription ${id}.`)
-    acc[email] ? acc[email].push(id) : (acc[email] = [id])
-    return acc
-  }, {})
+type User = {
+  credentials: UserSubscription['credentials']
+  subscriptions: Omit<UserSubscription, 'credentials'>[]
+}
 
-  for (const email in emailSubscriptions) {
-    info(`Running on ${email}`)
+export const run = async (entries: UserSubscription[], fn: SubscriptionCallback): Promise<void> => {
+  const users: User[] = entries.reduce((users, { credentials, ...subscription }) => {
+    const user = users.find(usr => usr.credentials.client_email === credentials.client_email)
+    if (!user) return [...users, { credentials, subscriptions: [subscription] }]
+    user.subscriptions.push(subscription)
+    return users
+  }, [])
 
-    const emailEnv = Object.keys(process.env).find(key => process.env[key] === email)
-    if (!emailEnv) throw Error(`Can't find env for ${email}.`)
+  for (const user of users) {
+    notice(`Running on ${user.credentials.client_email}...`)
 
-    const prefix = emailEnv.split('_').at(0)
-    const client_email = process.env[`${prefix}_CLIENT_EMAIL`]
-    const private_key = process.env[`${prefix}_PRIVATE_KEY`]
-    if (!client_email || !private_key) throw Error('Wrong credentials')
+    const subscriptions: calendar_v3.Schema$Subscription[] = await Promise.all(
+      user.subscriptions.map(async subscription => {
+        const fn = (await import(`@/subscriptions/${subscription.id}`)).default
+        return { ...subscription, fn }
+      })
+    )
 
     const client = calendar({
       version: 'v3',
       auth: new auth.GoogleAuth({
-        credentials: { client_email, private_key },
+        credentials: user.credentials,
         scopes: SCOPES,
       }),
     })
 
-    const subscriptions = emailSubscriptions[email].map(id => subscriptionsList.find(s => s.id === id))
-
     await fn(client, subscriptions)
-    if (Object.keys(emailSubscriptions).pop() !== email) info()
   }
 }
