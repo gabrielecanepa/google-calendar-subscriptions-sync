@@ -23,7 +23,7 @@ export const run = async (entries: UserSubscription[], fn: SubscriptionCallback)
   }, [])
 
   for (const user of users) {
-    info(`Running on ${user.credentials.client_email}...`)
+    info(`Running on ${user.credentials.client_email}`)
 
     const subscriptions: calendar_v3.Schema$Subscription[] = await Promise.all(
       user.subscriptions.map(async subscription => {

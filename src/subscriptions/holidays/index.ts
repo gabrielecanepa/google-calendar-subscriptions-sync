@@ -3,8 +3,6 @@ import { titleizeList, toEventId } from '@/utils'
 
 export default events =>
   events.reduce((acc, e) => {
-    const id = toEventId(e)
-
     if (e.location && e.location !== 'Italy') {
       if (!e.location.includes('Genoa')) return acc
       e.location = 'Genoa'
@@ -19,6 +17,8 @@ export default events =>
     let description = e.description.split('\n')[0].trim()
     description = description.endsWith('.') ? description : `${description}.`
     if (e.htmlLink) description += `\n\n${e.htmlLink.replace('www.', '')}`
+
+    const id = `${toEventId(e)}v2`
 
     return [...acc, { ...e, id, summary, description }]
   }, []) as calendar_v3.Schema$Subscription['fn']

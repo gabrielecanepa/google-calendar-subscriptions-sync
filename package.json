@@ -25,6 +25,7 @@
     "insert": "pnpm action insert",
     "lint": "eslint . --ext .ts",
     "lint:fix": "pnpm lint --fix",
+    "lint:commit": "commitlint",
     "ci": "pnpm lint"
   },
   "dependencies": {
