@@ -22,16 +22,16 @@ jobs:
         if: github.event_name == 'push'
         run: |
           if [[ ${{ github.event.forced }} == true ]]; then
-            echo "::warning ::Validating last commit only on force push"
-            commitlint --from HEAD~1 --to HEAD --verbose
+            echo "::warning ::Validating last commit only on force push, previous commits are not available."
+            commitlint --from=HEAD~1 --verbose
             exit $?
           fi
           if [[ ${{ github.event.before }} == 0000000000000000000000000000000000000000 ]]; then
-            echo "::warning ::Validating last commit only on branch ${{ github.ref_name }}"
-            commitlint --from HEAD~1 --to HEAD --verbose
+            echo "::warning ::Validating last commit only on branch ${{ github.ref_name }}, previous commits are not available."
+            commitlint --from=HEAD~1 --verbose
             exit $?
           fi
-          commitlint --from ${{ github.event.before }} --to ${{ github.event.after }} --verbose
+          commitlint --from $(git rev-parse --short ${{ github.event.before }}) --to HEAD --verbose
       - name: Validate PR commits
         if: github.event_name == 'pull_request'
         run: |
