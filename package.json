@@ -47,6 +47,6 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "google-calendar-subscriptions": "^1.1.0"
+    "google-calendar-subscriptions": "^1.1.1"
   }
 }
