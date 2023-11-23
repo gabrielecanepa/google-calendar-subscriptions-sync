@@ -52,7 +52,7 @@ const subscriptions: calendar_v3.Schema$Subscription[] = [
         // Workaround for duplicate event ids.
         if (id === 'acmilanhellasveronafc20230923') id += 'v2'
 
-        const summary = e.summary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
+        const summary = baseSummary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
         const description = getCompetiton(competitonCode)
 
         return { ...e, id, summary, description, url: null }
