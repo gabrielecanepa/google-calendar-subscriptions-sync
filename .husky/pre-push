@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+# Load Husky.
+HUSKY_DIR=$(dirname "$0")
+. "$HUSKY_DIR/_/husky.sh"
+
+dir=$(cd "$HUSKY_DIR"/.. && pwd)
+
+# Run CI checks.
+pnpm lint
+
+# Handle first commit.
+if [[ -z "$(git ls-remote "$(git config --get remote.origin.url)")" ]]; then
+  commitlint --edit "$1"
+  exit $?
+fi
+
+# Run commitlint on every unreleased commit.
+commitlint --from origin/main --to HEAD --verbose
