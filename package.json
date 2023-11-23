@@ -22,6 +22,8 @@
     "start": "node build/index.js",
     "dev": "ts-node src/index.ts",
     "sync": "pnpm build >/dev/null && pnpm start",
+    "clear": "ts-node scripts/clear.ts",
+    "new": "ts-node scripts/new.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "pnpm lint --fix",
     "ci": "pnpm lint"

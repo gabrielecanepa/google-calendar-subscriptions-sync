@@ -3,7 +3,8 @@ import { titleizeList, toBase32Hex } from './utils'
 
 const subscriptions: calendar_v3.Schema$Subscription[] = [
   {
-    summary: 'holidays',
+    summary: 'Holidays in Italy',
+    id: 'gmail-holidays',
     calendarId: '2d48cbd1c86fdb9f6528e371131e4f80f9f7b293caff772ab32c19c9a5b9d7d5@group.calendar.google.com',
     url: 'https://officeholidays.com/ics-all/italy',
     fn: events =>
@@ -23,7 +24,8 @@ const subscriptions: calendar_v3.Schema$Subscription[] = [
       }, []),
   },
   {
-    summary: 'milan',
+    summary: 'AC Milan',
+    id: 'gmail-milan',
     calendarId: 'bdf238964f0460928364d0c3f6fb74976b4f9328ab05302a4d6fc390f66927a9@group.calendar.google.com',
     url: 'https://ics.fixtur.es/v2/ac-milan.ics',
     fn: (events): calendar_v3.Schema$Event[] => events.map(e => {
@@ -47,6 +49,12 @@ const subscriptions: calendar_v3.Schema$Subscription[] = [
 
       return { ...e, id, summary, description }
     }),
+  },
+  {
+    summary: 'Le Wagon',
+    id: 'gc-lewagon',
+    calendarId: 'bd0b688e30afd3ca77e07741a5947eae7f01e6fb2d3ecf8ebf56632113ab3458@group.calendar.google.com',
+    url: 'http://kitt.lewagon.com/users/gabrielecanepa/calendar/49edb9f1ae4340f6908a27ea8ff05700',
   },
 ]
 

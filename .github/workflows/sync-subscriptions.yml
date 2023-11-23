@@ -20,5 +20,7 @@ jobs:
       - run: pnpm install
       - run: pnpm sync
         env:
-          CLIENT_EMAIL: ${{ secrets.CLIENT_EMAIL }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          GC_CLIENT_EMAIL: ${{ secrets.GC_CLIENT_EMAIL }}
+          GC_PRIVATE_KEY: ${{ secrets.GC_PRIVATE_KEY }}
+          GMAIL_CLIENT_EMAIL: ${{ secrets.GMAIL_CLIENT_EMAIL }}
+          GMAIL_PRIVATE_KEY: ${{ secrets.GMAIL_PRIVATE_KEY }}

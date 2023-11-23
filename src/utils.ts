@@ -1,5 +1,3 @@
-const BASE32HEX_REGEXP = /([a-v]|[0-9])/gi
-
 /**
  * Converts a list to a formatted title.
  */
@@ -13,4 +11,4 @@ export const titleizeList = (list: any[]): string => {
 /**
  * Converts a string to base32hex format.
  */
-export const toBase32Hex = (string: string): string => string.match(BASE32HEX_REGEXP)?.join('').toLowerCase() || ''
+export const toBase32Hex = (string: string): string => string.match(/([a-v]|[0-9])/gi)?.join('').toLowerCase() || ''
