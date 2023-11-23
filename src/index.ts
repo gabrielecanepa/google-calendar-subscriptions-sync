@@ -24,7 +24,7 @@ const client = calendar({
 })
 
 ;(async (): Promise<void> => {
-  console.info(`Syncing ${titleizeList(subscriptions.map(s => s.summary))}...`)
+  console.info(`Syncing subscriptions ${titleizeList(subscriptions.map(s => s.summary))}...`)
   await client.subscriptions.sync({ requestBody: subscriptions })
   console.info('Subscriptions synced.')
 })()

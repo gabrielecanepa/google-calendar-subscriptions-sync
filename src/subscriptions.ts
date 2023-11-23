@@ -26,38 +26,27 @@ const subscriptions: calendar_v3.Schema$Subscription[] = [
     summary: 'milan',
     calendarId: 'bdf238964f0460928364d0c3f6fb74976b4f9328ab05302a4d6fc390f66927a9@group.calendar.google.com',
     url: 'https://ics.fixtur.es/v2/ac-milan.ics',
-    fn: (events): calendar_v3.Schema$Event[] => {
-      const COMPETITION_REGEX = /\[(?<c>[A-Z]+)\]/
-      const RESULT_REGEX = /\((?<r>\d+-\d+)\)/
+    fn: (events): calendar_v3.Schema$Event[] => events.map(e => {
+      const competition = e.summary.match(/\[(?<c>[A-Z]+)\]/)?.groups?.c || null
+      const result = e.summary.match(/\((?<r>\d+-\d+)\)/)?.groups?.r || null
+      const baseSummary = e.summary.replace(new RegExp(`\\[${competition}\\]|\\(${result}\\)`, 'g'), '').trim()
 
-      const getCompetiton = (c: string): string => {
-        switch (c) {
-          case 'CL':
-            return 'UEFA Champions League'
-          case 'EL':
-            return 'UEFA Europa League'
-          case 'COP':
-            return 'Coppa Italia'
-          default:
-            return 'Serie A'
-        }
+      let competitionName = 'Serie A'
+      switch (competition) {
+        case 'CL':
+          competitionName = 'UEFA Champions League'
+        case 'EL':
+          competitionName = 'UEFA Europa League'
+        case 'COP':
+          competitionName = 'Coppa Italia'
       }
-      
-      return events.map(e => {
-        const competitonCode = e.summary.match(COMPETITION_REGEX)?.groups?.c || null
-        const result = e.summary.match(RESULT_REGEX)?.groups?.r || null
-        const baseSummary = e.summary.replace(new RegExp(`\\[${competitonCode}\\]|\\(${result}\\)`, 'g'), '').trim()
 
-        let id = toBase32Hex(baseSummary + (e.start.dateTime?.split('T')[0] || e.start.date))
-        // Workaround for duplicate event ids.
-        if (id === 'acmilanhellasveronafc20230923') id += 'v2'
+      const id = toBase32Hex(baseSummary + (e.start.dateTime?.split('T')[0] || e.start.date))
+      const summary = baseSummary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
+      const description = competitionName
 
-        const summary = baseSummary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
-        const description = getCompetiton(competitonCode)
-
-        return { ...e, id, summary, description, url: null }
-      })
-    },
+      return { ...e, id, summary, description }
+    }),
   },
 ]
 
