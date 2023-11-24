@@ -1,34 +1,22 @@
 import { config } from 'dotenv'
-import { auth, calendar } from 'google-calendar-subscriptions'
+import actions from './actions'
 import subscriptions from './subscriptions'
-import { titleizeList } from './utils'
 
 config()
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar']
-const PREFIXES = Object.keys(process.env).reduce((p, k) =>
-  k.endsWith('_CLIENT_EMAIL') ? [...p, k.split('_').at(0)] : p, [])
-  
-;(async (): Promise<void> => {
-  for (const prefix of PREFIXES) {
-    const client_email = process.env[`${prefix}_CLIENT_EMAIL`]
-    const private_key = process.env[`${prefix}_PRIVATE_KEY`]
-    
-    if (!client_email || !private_key)
-      throw Error(`Wrong ${prefix} credentials`)
-    
-    const client = calendar({
-      version: 'v3',
-      auth: new auth.GoogleAuth({
-        credentials: { client_email, private_key },
-        scopes: SCOPES,
-      }),
-    })
+const SUBSCRIPTIONS = process.env.SUBSCRIPTIONS
 
-    const clientSubscriptions = subscriptions.filter(s => s.id.startsWith(`${prefix.toLowerCase()}-`))
+const args = process.argv.slice(2)
+const cmd = args[0]
+const action = actions[cmd]
 
-    console.info(`Syncing subscriptions ${titleizeList(clientSubscriptions.map(s => s.summary))}...`)
-    await client.subscriptions.sync({ requestBody: clientSubscriptions })
-    console.info('Subscriptions synced.')
-  }
-})()
+if (!cmd) throw Error('No command provided.')
+if (!action) throw Error(`Action ${cmd} not found.`)
+
+const ids = args.slice(1).length
+  ? args.slice(1)
+  : SUBSCRIPTIONS
+    ? SUBSCRIPTIONS.split(',')
+    : subscriptions.map(({ id }) => id)
+
+action(ids)

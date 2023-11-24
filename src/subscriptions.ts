@@ -28,27 +28,27 @@ const subscriptions: calendar_v3.Schema$Subscription[] = [
     id: 'gmail-milan',
     calendarId: 'bdf238964f0460928364d0c3f6fb74976b4f9328ab05302a4d6fc390f66927a9@group.calendar.google.com',
     url: 'https://ics.fixtur.es/v2/ac-milan.ics',
-    fn: (events): calendar_v3.Schema$Event[] => events.map(e => {
-      const competition = e.summary.match(/\[(?<c>[A-Z]+)\]/)?.groups?.c || null
-      const result = e.summary.match(/\((?<r>\d+-\d+)\)/)?.groups?.r || null
-      const baseSummary = e.summary.replace(new RegExp(`\\[${competition}\\]|\\(${result}\\)`, 'g'), '').trim()
+    fn: async (events): Promise<calendar_v3.Schema$Event[]> => events.map(e => {
+        const competition = e.summary.match(/\[(?<c>[A-Z]+)\]/)?.groups?.c || null
+        const result = e.summary.match(/\((?<r>\d+-\d+)\)/)?.groups?.r || null
+        const baseSummary = e.summary.replace(new RegExp(`\\[${competition}\\]|\\(${result}\\)`, 'g'), '').trim()
 
-      let competitionName = 'Serie A'
-      switch (competition) {
-        case 'CL':
-          competitionName = 'UEFA Champions League'
-        case 'EL':
-          competitionName = 'UEFA Europa League'
-        case 'COP':
-          competitionName = 'Coppa Italia'
-      }
+        let competitionName = 'Serie A'
+        switch (competition) {
+          case 'CL':
+            competitionName = 'UEFA Champions League'
+          case 'EL':
+            competitionName = 'UEFA Europa League'
+          case 'COP':
+            competitionName = 'Coppa Italia'
+        }
 
-      const id = toBase32Hex(baseSummary + (e.start.dateTime?.split('T')[0] || e.start.date))
-      const summary = baseSummary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
-      const description = competitionName
+        const id = toBase32Hex(baseSummary + (e.start.dateTime?.split('T')[ 0 ] || e.start.date))
+        const summary = baseSummary.replace(/S\.S\.\s/g, 'SS ').replace('...', 'TBD')
+        const description = competitionName
 
-      return { ...e, id, summary, description }
-    }),
+        return { ...e, id, summary, description }
+      }),
   },
   {
     summary: 'Le Wagon',

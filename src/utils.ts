@@ -1,4 +1,9 @@
 /**
+ * Fetch a resource from a URL.
+ */
+export const fetchResource = async (url: string): Promise<ReadableStream<Uint8Array>> => (await fetch(url)).body
+
+/**
  * Converts a list to a formatted title.
  */
 export const titleizeList = (list: any[]): string => {
