@@ -1,3 +1,4 @@
+import { info } from 'console'
 import { auth, calendar, calendar_v3 } from 'google-calendar-subscriptions'
 import subscriptionsList from '../subscriptions'
 
@@ -9,17 +10,23 @@ type RunCallback = (
 ) => Promise<void>
 
 export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<void> => {
-  const prefixSubscriptions = subscriptionIds.reduce((acc, id) => {
-    if (!/[\w\d]+-[\w\d]+/.test(id)) throw Error(`Invalid prefix in ${id}.`)
-    const prefix = id.split('-').at(0).toUpperCase()
-    acc[prefix] ? acc[prefix].push(id) : acc[prefix] = [id]
+  const emailSubscriptions = subscriptionIds.reduce((acc, id) => {
+    const { email } = subscriptionsList.find(s => s.id === id) || {}
+    if (!email) throw Error(`Invalid subscription ${id}.`)
+    acc[email] ? acc[email].push(id) : acc[email] = [id]
     return acc
   }, {})
 
-  for (const prefix in prefixSubscriptions) {
+  for (const email in emailSubscriptions) {
+    info(`Running on ${email}...`)
+
+    const emailEnv = Object.keys(process.env).find(key => process.env[key] === email)
+    if (!emailEnv) throw Error(`Can't find env for ${email}.`)
+
+    const prefix = emailEnv.split('_').at(0)
     const client_email = process.env[`${prefix}_CLIENT_EMAIL`]
-    const private_key = process.env[ `${prefix}_PRIVATE_KEY` ]
-    if (!client_email || !private_key) throw Error('Wrong credentials')
+    const private_key = process.env[`${prefix}_PRIVATE_KEY`]
+    if (!client_email || !private_key) throw Error('Wrong credentials.')
     
     const client = calendar({
       version: 'v3',
@@ -29,10 +36,8 @@ export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<v
       }),
     })
 
-    const subscriptions = prefixSubscriptions[prefix].map(
-      subscriptionId => subscriptionsList.find(({ id }) => id === subscriptionId),
-    )
-
-    return await fn(client, subscriptions)
+    const subscriptions = emailSubscriptions[email].map(id => subscriptionsList.find(s => s.id === id))
+    
+    await fn(client, subscriptions)
   }
 }
