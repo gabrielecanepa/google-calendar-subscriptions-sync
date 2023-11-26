@@ -21,6 +21,12 @@
     "build": "rm -rf build && webpack --mode production",
     "action": "pnpm build >/dev/null && node build/index.js",
     "action:dev": "ts-node src/index.ts",
+    "sync": "pnpm action sync",
+    "sync:dev": "pnpm action:dev sync",
+    "clear": "pnpm action clear",
+    "clear:dev": "pnpm action:dev clear",
+    "insert": "pnpm action insert",
+    "insert:dev": "pnpm action:dev insert",
     "lint": "eslint . --ext .ts",
     "lint:fix": "pnpm lint --fix",
     "ci": "pnpm lint"
