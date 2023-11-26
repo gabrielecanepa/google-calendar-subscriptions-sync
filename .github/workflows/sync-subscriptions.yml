@@ -18,9 +18,12 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install
-      - run: pnpm action sync
+      - run: pnpm sync
         env:
           GC_CLIENT_EMAIL: ${{ secrets.GC_CLIENT_EMAIL }}
           GC_PRIVATE_KEY: ${{ secrets.GC_PRIVATE_KEY }}
           GMAIL_CLIENT_EMAIL: ${{ secrets.GMAIL_CLIENT_EMAIL }}
           GMAIL_PRIVATE_KEY: ${{ secrets.GMAIL_PRIVATE_KEY }}
+          HOLIDAYS_CALENDAR_ID: ${{ secrets.HOLIDAYS_CALENDAR_ID }}
+          LEWAGON_CALENDAR_ID: ${{ secrets.LEWAGON_CALENDAR_ID }}
+          MILAN_CALENDAR_ID: ${{ secrets.MILAN_CALENDAR_ID }}

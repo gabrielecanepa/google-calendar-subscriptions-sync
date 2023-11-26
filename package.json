@@ -32,7 +32,9 @@
     "ci": "pnpm lint"
   },
   "dependencies": {
-    "google-calendar-subscriptions": "^1.1.1"
+    "@msgpack/msgpack": "2.8.0",
+    "google-calendar-subscriptions": "^1.2.0",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",

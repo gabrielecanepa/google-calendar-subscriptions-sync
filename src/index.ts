@@ -1,8 +1,6 @@
-import { config } from 'dotenv'
+import { config } from 'dotenv'; config()
 import actions from './actions'
 import subscriptions from './subscriptions'
-
-config()
 
 const SUBSCRIPTIONS = process.env.SUBSCRIPTIONS
 

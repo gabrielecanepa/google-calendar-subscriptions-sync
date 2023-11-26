@@ -18,7 +18,7 @@ export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<v
   }, {})
 
   for (const email in emailSubscriptions) {
-    info(`Running on ${email}...`)
+    info(`Running on ${email}.`)
 
     const emailEnv = Object.keys(process.env).find(key => process.env[key] === email)
     if (!emailEnv) throw Error(`Can't find env for ${email}.`)
@@ -39,5 +39,6 @@ export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<v
     const subscriptions = emailSubscriptions[email].map(id => subscriptionsList.find(s => s.id === id))
     
     await fn(client, subscriptions)
+    if (Object.keys(emailSubscriptions).pop() !== email) info()
   }
 }
