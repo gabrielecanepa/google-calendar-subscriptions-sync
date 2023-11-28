@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# shellcheck shell=sh disable=SC2046
 
 # Load Husky.
 HUSKY_DIR=$(dirname "$0")
@@ -10,7 +11,7 @@ dir=$(cd "$HUSKY_DIR"/.. && pwd)
 pnpm lint
 
 # Handle first commit.
-if [[ -z "$(git ls-remote "$(git config --get remote.origin.url)")" ]]; then
+if [[ -z "$(git ls-remote $(git config --get remote.origin.url))" ]]; then
   commitlint --edit "$1"
   exit $?
 fi
