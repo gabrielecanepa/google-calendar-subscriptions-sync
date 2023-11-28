@@ -10,11 +10,17 @@ const URL = 'https://ics.fixtur.es/v2/ac-milan.ics'
 
 const COMPETITION_REGEX = /\s\[(\w+)\]/
 const PREFIX_REGEX = /(a\.?c\.?|a\.?s\.?|f\.?c\.?|s\.?s\.?|u\.?s\.?)\s/ig
-const STADIUM_REGEX = /\sstadi/i
+const STADIUM_REGEX = /stadi(o|on|um)/i
 const TIMEZONE = 'Europe/Rome'
 const FF_TEAM_URL = 'https://api.forzafootball.net/v1/teams/9363/matches'
 const FF_MATCH_BASE_URL = 'https://forzafootball.com/match'
 const SKY_TEAM_URL = 'https://skysports.com/calendars/football/fixtures/teams/ac-milan?live=false'
+
+/**
+ * Returns true if the two dates are the same.
+ */
+const isSameDate = (date1: string, date2: string): boolean => 
+  new Date(date1).getTime() === new Date(date2).getTime()
 
 const fn: calendar_v3.Schema$Subscription['fn'] = async events => {
   const ffMatches = (await fetchMsgPack(FF_TEAM_URL)).matches as ForzaFootballMatch[]
@@ -31,18 +37,16 @@ const fn: calendar_v3.Schema$Subscription['fn'] = async events => {
     const id = toBase32Hex(startDate.split('T')[0])
 
     // Add Forza Football match URL to description.
-    const match = ffMatches.find(({ kickoff_at }) => new Date(kickoff_at).getTime() === new Date(startDate).getTime())
+    const match = ffMatches.find(({ kickoff_at }) => isSameDate(kickoff_at, startDate))
     const description = match ? `${competition}\n\n${FF_MATCH_BASE_URL}/${match.id}` : competition
 
     // Add location from Sky.
-    const skyEvent = skyEvents.find(e => {
-      const date = new Date(e.start.dateTime || e.start.date)
-      date.setHours(date.getHours() + 1)
-      return date.getTime() === new Date(startDate).getTime()
-    })
+    const skyEvent = skyEvents.find(({ start }) => isSameDate(start.dateTime || start.date, startDate))
     if (skyEvent?.location) {
-      event.location = skyEvent.location || null
-      if (!STADIUM_REGEX.test(skyEvent.location)) event.location += ' Stadium'
+      const { location } = skyEvent
+      event.location = location
+      if (!STADIUM_REGEX.test(location) && !location.includes(', '))
+        event.location += ' Stadium'
     }
 
     return { ...event, id, summary, description, start }
