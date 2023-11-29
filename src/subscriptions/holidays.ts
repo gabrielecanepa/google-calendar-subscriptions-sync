@@ -7,7 +7,15 @@ const EMAIL = process.env.GMAIL_CLIENT_EMAIL
 const CALENDAR_ID = process.env.HOLIDAYS_CALENDAR_ID
 const URL = 'https://officeholidays.com/ics-all/italy'
 
-const fn: calendar_v3.Schema$Subscription['fn'] = events =>
+const holidays: calendar_v3.Schema$Subscription = {
+  summary: SUMMARY,
+  id: ID,
+  email: EMAIL,
+  calendarId: CALENDAR_ID,
+  url: URL,
+}
+
+holidays.fn = (events): calendar_v3.Schema$Event[] =>
   events.reduce((acc, e) => {
     const id = toBase32Hex(e.summary + (e.start.dateTime?.split('T')[0] || e.start.date).slice(0, 4))
     const regionalHoliday = e.location && e.location !== 'Italy'
@@ -22,14 +30,5 @@ const fn: calendar_v3.Schema$Subscription['fn'] = events =>
     if (e.htmlLink) description += `\n\n${e.htmlLink.replace('www.', '')}`
     return [...acc, { ...e, id, summary, description }]
   }, [])
-
-const holidays: calendar_v3.Schema$Subscription = {
-  summary: SUMMARY,
-  id: ID,
-  email: EMAIL,
-  calendarId: CALENDAR_ID,
-  url: URL,
-  fn,
-}
 
 export default holidays

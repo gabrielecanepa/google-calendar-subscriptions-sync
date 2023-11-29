@@ -8,6 +8,14 @@ const EMAIL = process.env.GMAIL_CLIENT_EMAIL
 const CALENDAR_ID = process.env.MILAN_CALENDAR_ID
 const URL = 'https://ics.fixtur.es/v2/ac-milan.ics'
 
+const milan: calendar_v3.Schema$Subscription = {
+  summary: SUMMARY,
+  id: ID,
+  email: EMAIL,
+  calendarId: CALENDAR_ID,
+  url: URL,
+}
+
 const COMPETITION_REGEX = /\s\[(\w+)\]/
 const PREFIX_REGEX = /(a\.?c\.?|a\.?s\.?|f\.?c\.?|s\.?s\.?|u\.?s\.?)\s/ig
 const STADIUM_REGEX = /stadi(o|on|um)/i
@@ -22,7 +30,7 @@ const SKY_TEAM_URL = 'https://skysports.com/calendars/football/fixtures/teams/ac
 const isSameDate = (date1: string, date2: string): boolean => 
   new Date(date1).getTime() === new Date(date2).getTime()
 
-const fn: calendar_v3.Schema$Subscription['fn'] = async events => {
+milan.fn = async (events): Promise<calendar_v3.Schema$Event[]> => {
   const ffMatches = (await fetchMsgPack(FF_TEAM_URL)).matches as ForzaFootballMatch[]
   const skyEvents = await fetchCalendarEvents(SKY_TEAM_URL)
 
@@ -51,15 +59,6 @@ const fn: calendar_v3.Schema$Subscription['fn'] = async events => {
 
     return { ...event, id, summary, description, start }
   })
-}
-
-const milan: calendar_v3.Schema$Subscription = {
-  summary: SUMMARY,
-  id: ID,
-  email: EMAIL,
-  calendarId: CALENDAR_ID,
-  url: URL,
-  fn,
 }
 
 export default milan
