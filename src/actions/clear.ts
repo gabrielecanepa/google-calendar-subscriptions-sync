@@ -2,7 +2,7 @@ import { error, info } from 'console'
 import { run } from './run'
 
 const MAX_CALENDAR_EVENTS = 2_500
-  
+
 export const clear = async (subscriptionIds: string[]): Promise<void> => {
   run(subscriptionIds, async (client, subscriptions) => {
     for (const subscription of subscriptions) {
