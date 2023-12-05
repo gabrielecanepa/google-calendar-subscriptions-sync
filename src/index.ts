@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { config } from 'dotenv'; config()
 import actions from './actions'
 import subscriptions from './subscriptions'
