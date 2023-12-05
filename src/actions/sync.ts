@@ -10,4 +10,3 @@ export const sync = async (subscriptionIds: string[]): Promise<void> => {
     info(`${pluralize('Subscription', subscriptions.length)} synced ✅`)
   })
 }
-

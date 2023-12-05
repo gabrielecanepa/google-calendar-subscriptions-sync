@@ -2,16 +2,23 @@ import { resolve } from 'path'
 import TerserPlugin from 'terser-webpack-plugin'
 import { Configuration } from 'webpack'
 
-const config: Configuration = ({
+const src = resolve(__dirname, 'src')
+const build = resolve(__dirname, 'build')
+const entry = resolve(src, 'index.ts')
+
+const config: Configuration = {
   mode: 'production',
   target: 'node',
-  entry: resolve(__dirname, 'src', 'index.ts'),
+  entry,
   output: {
     filename: 'index.js',
-    path: resolve(__dirname, 'build'),
+    path: build,
   },
   resolve: {
-    extensions: ['.js', '.json', '.ts'],
+    extensions: ['.js', '.ts'],
+    alias: {
+      '@': src,
+    },
   },
   module: {
     rules: [
@@ -23,10 +30,12 @@ const config: Configuration = ({
     ],
   },
   optimization: {
-    minimizer: [new TerserPlugin({
-      extractComments: false,
-    })],
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+      }),
+    ],
   },
-})
+}
 
 export default config

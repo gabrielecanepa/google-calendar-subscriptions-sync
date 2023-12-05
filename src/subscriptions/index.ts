@@ -1,6 +1,6 @@
-import holidays from './holidays'
-import lewagon from './lewagon'
-import milan from './milan'
+import { default as holidays } from './holidays'
+import { default as lewagon } from './lewagon'
+import { default as milan } from './milan'
 
-export default [holidays, milan, lewagon]
-export { holidays, milan, lewagon }
+export default [holidays, lewagon, milan]
+export { holidays, lewagon, milan }

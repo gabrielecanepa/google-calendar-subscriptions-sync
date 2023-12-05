@@ -1,16 +1,20 @@
 {
   "include": ["src"],
-  "exclude": ["node_modules"],
   "compilerOptions": {
-    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "outDir": "build",
-    "baseUrl": "src",
-    "allowJs": false,
-    "target": "es2020",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
+    "allowJs": false,
     "resolveJsonModule": true,
-    "types": ["node"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"]
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
