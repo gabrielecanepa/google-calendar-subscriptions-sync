@@ -15,7 +15,7 @@ export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<v
   }, {})
 
   for (const email in emailSubscriptions) {
-    info(`Running on ${email}.`)
+    info(`Running on ${email}`)
 
     const emailEnv = Object.keys(process.env).find(key => process.env[key] === email)
     if (!emailEnv) throw Error(`Can't find env for ${email}.`)
@@ -23,7 +23,7 @@ export const run = async (subscriptionIds: string[], fn: RunCallback): Promise<v
     const prefix = emailEnv.split('_').at(0)
     const client_email = process.env[`${prefix}_CLIENT_EMAIL`]
     const private_key = process.env[`${prefix}_PRIVATE_KEY`]
-    if (!client_email || !private_key) throw Error('Wrong credentials.')
+    if (!client_email || !private_key) throw Error('Wrong credentials')
 
     const client = calendar({
       version: 'v3',

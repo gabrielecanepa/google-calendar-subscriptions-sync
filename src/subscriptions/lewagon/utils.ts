@@ -1,5 +1,5 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
-import { COURSE_REGEX, ROLE_REGEX, addresses, modules } from './data'
+import { ROLE_REGEX, addresses, modules } from './data'
 import { addLeadingZeros, titleizeList } from '@/utils'
 
 export const parseEvents = (events: calendar_v3.Schema$Event[]): calendar_v3.Schema$Event[] =>
@@ -11,26 +11,39 @@ export const parseEvents = (events: calendar_v3.Schema$Event[]): calendar_v3.Sch
     }
 
     if (description) {
-      const [roleDescription, courseDescription, ...activities] = description.split('\n').filter(Boolean)
-
       const parts = []
 
-      const course = courseDescription.replace(COURSE_REGEX, '').trim()
-      if (course) parts.push(course)
+      const [role, course, ...activities] = description.split('\n').filter(Boolean)
 
-      let role: string = null
-      const roleLower = roleDescription.match(ROLE_REGEX)?.at(1)
-      const roleUpper = roleLower ? (roleLower === 'lecturer' ? 'Lecturer' : 'TA') : null
-      if (roleUpper) role = roleDescription.replace(roleLower, roleUpper)
-      if (activities.length) role += `\nActivities: ${titleizeList(activities)}`
-      if (role) parts.push(role)
+      // Course
+      parts.push(course)
 
+      // Role
+      switch (role.match(ROLE_REGEX)?.at(1)) {
+        case 'lecturer':
+          parts.push('\n\n', 'Role: Lecturer')
+          break
+        case 'lead_ta':
+          parts.push('\n\n', 'Role: Lead TA')
+          break
+        case 'ta':
+          parts.push('\n\n', 'Role: TA')
+          break
+      }
+
+      // Activities
+      if (activities.length) {
+        parts.push('\n', `Activities: ${titleizeList(activities)}`)
+      }
+
+      // URL
       if (htmlLink) {
         const lecturesUrl = htmlLink.replace(/calendar$/, 'lectures')
         const lectureName = summary.split(' - ').pop()
         const lecturePaths = []
 
         const module = modules.find(({ days }) => !!days.find(({ name }) => lectureName === name))
+
         if (module) {
           const moduleIndex = modules.indexOf(module)
           lecturePaths.push(`${addLeadingZeros(moduleIndex)}-${module.path}`)
@@ -39,10 +52,11 @@ export const parseEvents = (events: calendar_v3.Schema$Event[]): calendar_v3.Sch
             const dayIndex = module.days.indexOf(day)
             lecturePaths.push(`${addLeadingZeros(dayIndex + 1)}-${day.path}`)
           }
-          parts.push(`URL: ${lecturesUrl}/${lecturePaths.join('%2F')}`)
+          parts.push('\n\n', `URL: ${lecturesUrl}/${lecturePaths.join('%2F')}`)
         }
       }
-      event.description = parts.join('\n\n')
+
+      event.description = parts.join('')
     }
 
     return event

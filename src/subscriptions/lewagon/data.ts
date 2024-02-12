@@ -1,6 +1,6 @@
 import { LeWagonModule } from './types'
 
-export const COURSE_REGEX = /\s(FT|PT)\s(january|february|march|april|may|june|july|august|september|october|november|december)\s'\d{2}/i
+export const COURSE_REGEX = /\s(FT|PT)\s/i
 export const ROLE_REGEX = /Role: (\w+)/i
 
 export const addresses: Record<string, string> = {
@@ -32,10 +32,6 @@ export const modules: LeWagonModule[] = [
       {
         name: 'Iterators & Blocks',
         path: 'Iterators-Blocks',
-      },
-      {
-        name: 'Algorithms',
-        path: 'Algorithms',
       },
       {
         name: 'Hash & Symbols',

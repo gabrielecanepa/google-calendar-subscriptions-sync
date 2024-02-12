@@ -9,4 +9,4 @@ updates:
       - dependency-name: "*"
       - update-types: ["version-update:semver-patch"]
     schedule:
-      interval: weekly
+      interval: monthly
