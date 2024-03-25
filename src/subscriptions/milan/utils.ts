@@ -11,7 +11,7 @@ export const parseEvents = async (events): Promise<calendar_v3.Schema$Event[]> =
     const [competitionMatch, competitionCode] = event.summary.match(COMPETITION_REGEX) || ['', '']
     const competition = competitionCode ? FootballCompetition[competitionCode as keyof typeof FootballCompetition] : 'Serie A'
 
-    const summary = event.summary.replace(competitionMatch, '').replaceAll(PREFIX_REGEX, '').trim()
+    const summary = event.summary.replace(competitionMatch, '').replace(PREFIX_REGEX, '').replace(/\s\s/g, ' ').trim()
 
     const start: calendar_v3.Schema$EventDateTime = { ...event.start, timeZone: TIMEZONE }
     const startDate = start.dateTime || start.date
