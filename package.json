@@ -19,7 +19,6 @@
   "scripts": {
     "prepare": "husky install",
     "action": "ts-node src/index.ts action",
-    "script": "ts-node src/index.ts script",
     "sync": "pnpm action sync",
     "clear": "pnpm action clear",
     "insert": "pnpm action insert",
