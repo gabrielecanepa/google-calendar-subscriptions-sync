@@ -3,7 +3,7 @@ name: Sync subscriptions
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */3 * * *'
+    - cron: '* * * * *'
 
 jobs:
   sync-subscriptions:
@@ -24,12 +24,12 @@ jobs:
           GC_PRIVATE_KEY: ${{ secrets.GC_PRIVATE_KEY }}
           GMAIL_CLIENT_EMAIL: ${{ secrets.GMAIL_CLIENT_EMAIL }}
           GMAIL_PRIVATE_KEY: ${{ secrets.GMAIL_PRIVATE_KEY }}
+          FOOTBALL_CALENDAR_ID: ${{ secrets.FOOTBALL_CALENDAR_ID }}
+          FOOTBALL_SUBSCRIPTION_URL: ${{ secrets.FOOTBALL_SUBSCRIPTION_URL }}
+          FOOTBALL_USER: ${{ secrets.FOOTBALL_USER }}
           HOLIDAYS_CALENDAR_ID: ${{ secrets.HOLIDAYS_CALENDAR_ID }}
           HOLIDAYS_SUBSCRIPTION_URL: ${{ secrets.HOLIDAYS_SUBSCRIPTION_URL }}
           HOLIDAYS_USER: ${{ secrets.HOLIDAYS_USER }}
           LEWAGON_CALENDAR_ID: ${{ secrets.LEWAGON_CALENDAR_ID }}
           LEWAGON_SUBSCRIPTION_URL: ${{ secrets.LEWAGON_SUBSCRIPTION_URL }}
           LEWAGON_USER: ${{ secrets.LEWAGON_USER }}
-          MILAN_CALENDAR_ID: ${{ secrets.MILAN_CALENDAR_ID }}
-          MILAN_SUBSCRIPTION_URL: ${{ secrets.MILAN_SUBSCRIPTION_URL }}
-          MILAN_USER: ${{ secrets.MILAN_USER }}

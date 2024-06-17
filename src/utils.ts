@@ -53,8 +53,15 @@ export const exit = (message: string, code: number = 1): void => {
 /**
  * Fetches and decodes a MessagePack from a URL.
  */
-export const fetchMsgPack = async (url: string): Promise<Record<string, any>> =>
-  await decodeAsync((await fetch(url)).body)
+export const fetchMsgPack = async (url: string, opts: RequestInit = {}): Promise<any> => {
+  const headers = {
+    Accept: 'application/msgpack',
+    'Accept-Language': 'en-US,en;q=0.9',
+    ...opts.headers,
+  }
+  const response = await fetch(url, { ...opts, headers })
+  return await decodeAsync(response.body)
+}
 
 /**
  * Converts a list to a formatted title.

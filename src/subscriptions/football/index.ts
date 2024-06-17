@@ -1,10 +1,10 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
-import { MATCH_BASE_URL, TEAM_URL, TIMEZONE } from './data'
+import { MATCH_BASE_URL, TIMEZONE, matchUrls } from './data'
 import { Match } from './types'
 import { fetchMsgPack } from '@/utils'
 
-export default (async () => {
-  const matches = (await fetchMsgPack(TEAM_URL)).matches as Match[]
+const fetchMatches = async (url: string) => {
+  const matches = (await fetchMsgPack(url)).matches as Match[]
 
   return matches.map(match => {
     const event: calendar_v3.Schema$Event = {}
@@ -35,4 +35,9 @@ export default (async () => {
 
     return event
   })
+}
+
+export default (async () => {
+  const events = await Promise.all(matchUrls.map(fetchMatches))
+  return events.flat()
 }) as calendar_v3.Schema$Subscription['fn']
