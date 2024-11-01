@@ -16,7 +16,7 @@ pnpm install
 
 ## Configuration
 
-Create a `.env` file and populate it with arbitrary credentials of the service accounts you will use. These variables MUST have an arbitrary prefix and end with `CLIENT_EMAIL` and `PRIVATE_KEY`:
+Create a `.env` file and populate it with arbitrary credentials of the service accounts you will use. These variables must have an arbitrary prefix and end with `CLIENT_EMAIL` and `PRIVATE_KEY`:
 
 ```sh
 PERSONAL_CLIENT_EMAIL=my-service-account@project-1.iam.gserviceaccount.com
