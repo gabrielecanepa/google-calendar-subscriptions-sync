@@ -6,7 +6,7 @@ import { fetchMsgPack } from '@/utils'
 const fetchMatches = async (url: string) => {
   const matches = (await fetchMsgPack(url)).matches as Match[]
 
-  return matches.map(match => {
+  return matches.reduce((matches, match) => {
     const event: calendar_v3.Schema$Event = {}
 
     const {
@@ -19,6 +19,8 @@ const fetchMatches = async (url: string) => {
       status,
       match_time: { length },
     } = match
+
+    if (competition === 'Club Friendly Games') return matches
 
     const startDatetime = new Date(kickoff_at).toISOString()
     const endDatetime = new Date(new Date(startDatetime).getTime() + (length + 15) * 60_000).toISOString()
@@ -33,8 +35,8 @@ const fetchMatches = async (url: string) => {
       event.summary += ` (${score.current.join('-')})`
     }
 
-    return event
-  })
+    return [...matches, event]
+  }, [])
 }
 
 export default (async () => {
