@@ -1,8 +1,8 @@
-import { run } from './run'
-import { UserSubscription } from '@/types'
-import { info } from '@/utils'
+import { run } from '@/actions'
+import type { Action } from '@/lib/types'
+import { info } from '@/lib/utils'
 
-export const insert = async (entries: UserSubscription[]): Promise<void> => {
+export const insert: Action = async entries => {
   run(entries, async (client, subscriptions) => {
     for (const [i, subscription] of subscriptions.entries()) {
       info(`Inserting ${subscription.summary || subscription.id || `subscription ${i}`}...`)

@@ -1,6 +1,6 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
 import { ROLE_REGEX, addresses, modules } from './data'
-import { addLeadingZeros, titleizeList, toEventId } from '@/utils'
+import { addLeadingZeros, titleizeList, toEventId } from '@/lib/utils'
 
 const fn: calendar_v3.Schema$Subscription['fn'] = events =>
   events.map(event => {

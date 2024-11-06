@@ -1,10 +1,10 @@
-import { run } from './run'
-import { UserSubscription } from '@/types'
-import { info, notice, warning } from '@/utils'
+import { run } from '@/actions'
+import type { Action } from '@/lib/types'
+import { info, notice, warning } from '@/lib/utils'
 
 const MAX_CALENDAR_EVENTS = 2_500
 
-export const clear = async (entries: UserSubscription[]): Promise<void> => {
+export const clear: Action = async entries => {
   run(entries, async (client, subscriptions) => {
     for (const [i, subscription] of subscriptions.entries()) {
       const { calendarId, id, summary } = subscription

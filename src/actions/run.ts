@@ -1,20 +1,16 @@
 import { auth, calendar, calendar_v3 } from 'google-calendar-subscriptions'
-import { UserSubscription } from '@/types'
-import { info } from '@/utils'
+
+import { Action, UserSubscription } from '@/lib/types'
+import { info } from '@/lib/utils'
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-type SubscriptionCallback = (
-  client: calendar_v3.Calendar,
-  subscriptionIds: calendar_v3.Schema$Subscription[]
-) => Promise<void>
-
-type User = {
+interface User {
   credentials: UserSubscription['credentials']
   subscriptions: Omit<UserSubscription, 'credentials'>[]
 }
 
-export const run = async (entries: UserSubscription[], fn: SubscriptionCallback): Promise<void> => {
+export const run: Action = async (entries, fn) => {
   const users: User[] = entries.reduce((users, { credentials, ...subscription }) => {
     const user = users.find(usr => usr.credentials.client_email === credentials.client_email)
     if (!user) return [...users, { credentials, subscriptions: [subscription] }]

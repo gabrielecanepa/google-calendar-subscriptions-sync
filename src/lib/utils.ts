@@ -64,6 +64,11 @@ export const fetchMsgPack = async (url: string, opts: RequestInit = {}): Promise
 }
 
 /**
+ * Returns the plural form of a word based on the count.
+ */
+export { default as pluralize } from 'pluralize'
+
+/**
  * Converts a list to a formatted title.
  */
 export const titleizeList = (list: any[]): string => {

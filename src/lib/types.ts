@@ -6,3 +6,10 @@ export interface UserSubscription extends calendar_v3.Schema$Subscription {
     private_key: string
   }
 }
+
+export interface Action {
+  (
+    entries: UserSubscription[],
+    fn?: (client: calendar_v3.Calendar, subscriptionIds: calendar_v3.Schema$Subscription[]) => Promise<void>
+  ): Promise<void>
+}

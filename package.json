@@ -22,6 +22,7 @@
     "sync": "pnpm action sync",
     "clear": "pnpm action clear",
     "insert": "pnpm action insert",
+    "reset": "pnpm action reset",
     "lint": "eslint . --ext .ts",
     "lint:fix": "pnpm lint --fix",
     "lint:commit": "commitlint",

@@ -1,5 +1,5 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
-import { titleizeList, toEventId } from '@/utils'
+import { titleizeList, toEventId } from '@/lib/utils'
 
 export default events =>
   events.reduce((acc, e) => {

@@ -1,7 +1,7 @@
 import { calendar_v3 } from 'google-calendar-subscriptions'
 import { MATCH_BASE_URL, TIMEZONE, matchUrls } from './data'
 import { Match } from './types'
-import { fetchMsgPack } from '@/utils'
+import { fetchMsgPack } from '@/lib/utils'
 
 const fetchMatches = async (url: string) => {
   const matches = (await fetchMsgPack(url)).matches as Match[]

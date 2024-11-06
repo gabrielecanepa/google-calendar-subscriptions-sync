@@ -3,8 +3,8 @@ import { readdirSync } from 'fs'
 import { basename, extname, resolve } from 'path'
 
 import actions from '@/actions'
-import { UserSubscription } from '@/types'
-import { exit, getEnv, toEnv } from '@/utils'
+import { UserSubscription } from '@/lib/types'
+import { exit, getEnv, toEnv } from '@/lib/utils'
 
 const SUBSCRIPTIONS = getEnv('SUBSCRIPTIONS')
 
@@ -46,6 +46,8 @@ const exec = async () => {
         if (SUBSCRIPTIONS) return SUBSCRIPTIONS.split(',').includes(id)
         return true
       })
+
+      if (!entries.length) exit('subscriptions not found.')
 
       action(entries)
       break
