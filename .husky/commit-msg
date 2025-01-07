@@ -7,4 +7,4 @@
 [[ "$(cat "$1")" =~ ^(\#|\[tmp\]) ]] && exit 0
 
 # Run commitlint.
-pnpm lint:commit --edit "$1"
+commitlint --edit "$1"

@@ -12,9 +12,9 @@ pnpm lint
 
 # Handle first commit.
 if [[ -z "$(git ls-remote $(git config --get remote.origin.url))" ]]; then
-  pnpm lint:commit --edit "$1"
+  commitlint --edit "$1"
   exit $?
 fi
 
 # Run commitlint on every unreleased commit.
-pnpm lint:commit --from origin/main --to HEAD --verbose
+commitlint --from origin/main --to HEAD --verbose

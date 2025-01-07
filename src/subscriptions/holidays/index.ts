@@ -8,11 +8,10 @@ export default events =>
       e.location = 'Genoa'
     }
 
-    const summary =
-      e.summary
-        .replace('(Not a Public Holiday)', '')
-        .replace('(Regional Holiday)', `(${titleizeList(e.location.split(', '))} only)`)
-        .trim() + ' 🇮🇹'
+    const summary = e.summary
+      .replace('(Not a Public Holiday)', '')
+      .replace('(Regional Holiday)', `(${titleizeList(e.location.split(', '))})`)
+      .trim()
 
     let description = e.description.split('\n')[0].trim()
     description = description.endsWith('.') ? description : `${description}.`

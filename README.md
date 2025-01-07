@@ -47,7 +47,7 @@ Custom subscriptions can be defined in `src/subscriptions` and must be named as 
 import { calendar_v3 } from 'google-calendar-subscriptions'
 
 const transformEvents = (events: calendar_v3.Schema$Event[]) => {
-  return events.map((event) => {
+  return events.map(event => {
     // ...
   })
 }
@@ -88,4 +88,3 @@ Create a new calendar and insert the events from the subscriptions:
 ```sh
 pnpm action insert [subscriptions]
 ```
-
