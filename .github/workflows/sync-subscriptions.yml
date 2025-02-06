@@ -24,6 +24,8 @@ jobs:
           GC_PRIVATE_KEY: ${{ secrets.GC_PRIVATE_KEY }}
           GMAIL_CLIENT_EMAIL: ${{ secrets.GMAIL_CLIENT_EMAIL }}
           GMAIL_PRIVATE_KEY: ${{ secrets.GMAIL_PRIVATE_KEY }}
+          GMAIL2_CLIENT_EMAIL: ${{ secrets.GMAIL2_CLIENT_EMAIL }}
+          GMAIL2_PRIVATE_KEY: ${{ secrets.GMAIL2_PRIVATE_KEY }}
           SUBSCRIPTIONS: ${{ vars.SUBSCRIPTIONS }}
           FOOTBALL_CALENDAR_ID: ${{ secrets.FOOTBALL_CALENDAR_ID }}
           FOOTBALL_SUBSCRIPTION_URL: ${{ vars.FOOTBALL_SUBSCRIPTION_URL }}
