@@ -1,4 +1,6 @@
 name: Keep alive
+permissions:
+  actions: write
 
 on:
   schedule:
