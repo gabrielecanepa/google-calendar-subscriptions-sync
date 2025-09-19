@@ -1,9 +1,9 @@
-name: Sync subscriptions
+name: Sync Subscriptions
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '* * * * *'
+    - cron: "* * * * *"
 
 jobs:
   sync-subscriptions:
@@ -11,8 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 8.10.5
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
