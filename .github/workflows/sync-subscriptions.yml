@@ -3,7 +3,7 @@ name: Sync Subscriptions
 on:
   workflow_dispatch:
   schedule:
-    - cron: "* * * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
   sync-subscriptions:

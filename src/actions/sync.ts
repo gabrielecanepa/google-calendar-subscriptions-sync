@@ -1,5 +1,5 @@
 import { run } from '@/actions'
-import { info, titleizeList } from '@/lib/utils'
+import { info, titleizeList, withRetry } from '@/lib/utils'
 import { Action } from '@/lib/types'
 
 export const sync: Action = async entries =>
@@ -7,5 +7,5 @@ export const sync: Action = async entries =>
     const names = subscriptions.map(({ id, summary }, i) => summary || id || `subscription ${i}`)
     info(`Syncing ${titleizeList(names)}...`)
 
-    await client.subscriptions.sync({ requestBody: subscriptions })
+    await withRetry(() => client.subscriptions.sync({ requestBody: subscriptions }))
   })

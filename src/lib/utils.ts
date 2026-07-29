@@ -1,6 +1,22 @@
 import { decodeAsync } from '@msgpack/msgpack'
 import { calendar_v3 } from 'google-calendar-subscriptions'
 
+const REQUEST_RETRIES = 3
+const REQUEST_RETRY_DELAY = 2000
+
+const TRANSIENT_STATUS_CODES = [408, 425, 429, 500, 502, 503, 504]
+const TRANSIENT_ERROR_CODES = [
+  'ECONNABORTED',
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'EAI_AGAIN',
+  'ENOTFOUND',
+  'EPIPE',
+  'ETIMEDOUT',
+  'UND_ERR_CONNECT_TIMEOUT',
+  'UND_ERR_SOCKET',
+]
+
 /**
  * Converts a string to an environment variable name format.
  */
@@ -51,6 +67,45 @@ export const exit = (message: string, code: number = 1): void => {
 }
 
 /**
+ * Waits for the given amount of milliseconds.
+ */
+export const sleep = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * Checks if an error is a transient network or server error worth retrying.
+ */
+export const isTransientError = (error: unknown, depth = 2): boolean => {
+  if (depth < 0 || !error || typeof error !== 'object') return false
+
+  const { cause, code, error: nested, status } = error as Record<string, any>
+
+  if (TRANSIENT_STATUS_CODES.includes(status) || TRANSIENT_STATUS_CODES.includes(code)) return true
+  if (TRANSIENT_ERROR_CODES.includes(code)) return true
+
+  return isTransientError(nested, depth - 1) || isTransientError(cause, depth - 1)
+}
+
+/**
+ * Runs an asynchronous operation, retrying transient errors with an exponential backoff.
+ */
+export const withRetry = async <T>(
+  fn: () => Promise<T>,
+  retries = REQUEST_RETRIES,
+  delay = REQUEST_RETRY_DELAY
+): Promise<T> => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fn()
+    } catch (e) {
+      if (attempt === retries || !isTransientError(e)) throw e
+      warning(`Transient error, retrying (${attempt}/${retries - 1})`)
+      await sleep(delay * 2 ** (attempt - 1))
+    }
+  }
+  throw Error(`Failed after ${retries} attempts.`)
+}
+
+/**
  * Fetches and decodes a MessagePack from a URL.
  */
 export const fetchMsgPack = async (url: string, opts: RequestInit = {}): Promise<any> => {
@@ -59,8 +114,11 @@ export const fetchMsgPack = async (url: string, opts: RequestInit = {}): Promise
     'Accept-Language': 'en-US,en;q=0.9',
     ...opts.headers,
   }
-  const response = await fetch(url, { ...opts, headers })
-  return await decodeAsync(response.body)
+  return await withRetry(async () => {
+    const response = await fetch(url, { ...opts, headers })
+    if (!response.ok) throw Object.assign(Error(`Request to ${url} failed.`), { status: response.status })
+    return await decodeAsync(response.body)
+  })
 }
 
 /**

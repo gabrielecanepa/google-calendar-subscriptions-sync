@@ -49,7 +49,7 @@ const exec = async () => {
 
       if (!entries.length) exit('subscriptions not found.')
 
-      action(entries)
+      await action(entries)
       break
 
     case Cmd.Script:
